@@ -5,7 +5,7 @@ using Core.Entities;
 
 namespace Entities.Dtos
 {
-    public class CarDetailDto :IEntity
+    public class CarDetailDto :IDto
     {
         public int CarId { get; set; }
         public string CarName { get; set; }
