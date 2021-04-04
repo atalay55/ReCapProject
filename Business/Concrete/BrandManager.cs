@@ -4,39 +4,41 @@ using System.Text;
 using Business.Abstract;
 using Business.Constant;
 using Core.Utilities;
+using DataAccess.Abstract;
 using Entities.Concrete;
 
 namespace Business.Concrete
 {
     public class BrandManager : IBrandService
     {
-        IBrandService _brandService;
+        IBrandDal _brandDal;
 
-        public BrandManager(IBrandService brandService)
+        public BrandManager(IBrandDal brandDal)
         {
-            _brandService = brandService;
+            _brandDal = brandDal;
         }
 
         public IResult Add(Brand items)
         {
-            _brandService.Add(items);
+            _brandDal.Add(items);
+
             return new SuccessResult(Message.Added);
         }
 
         public IResult Delete(Brand items)
         {
-            _brandService.Delete(items);
+            _brandDal.Delete(items);
             return new SuccessResult(Message.Deleted);
         }
 
         public IDataResult<List<Brand>> GetAll()
         {
-            return new SuccessDataResult<List<Brand>>( _brandService.GetAll().Data,Message.DataListted);
+            return new SuccessDataResult<List<Brand>>( _brandDal.GetAll(),Message.DataListted);
         }
 
         public IResult Update(Brand items)
         {
-            _brandService.Update(items);
+            _brandDal.Update(items);
             return new SuccessResult(Message.Updated);
         }
     }

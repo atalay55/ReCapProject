@@ -18,15 +18,15 @@ namespace Business.Concrete
             _userDal = userDal;
         }
 
-        public IResult Add(User items)
+        public IResult Add(User user)
         {
-            _userDal.Add(items);
+            _userDal.Add(user);
             return new SuccessResult(Message.Added);
         }
 
-        public IResult Delete(User items)
+        public IResult Delete(User user)
         {
-            _userDal.Delete(items);
+            _userDal.Delete(user);
             return new SuccessResult(Message.Deleted);
         }
 
@@ -35,9 +35,9 @@ namespace Business.Concrete
             return new SuccessDataResult<List<User>>(_userDal.GetAll());
         }
 
-        public IResult Update(User items)
+        public IResult Update(User user)
         {
-            _userDal.Update(items);
+            _userDal.Update(user);
             return new SuccessResult(Message.Updated);
         }
     }
