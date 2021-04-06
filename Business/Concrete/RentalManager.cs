@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Business.Abstract;
 using Business.Constant;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Business;
 using Core.Entities;
 using Core.Utilities;
@@ -11,6 +13,7 @@ using Entities.Concrete;
 
 namespace Business.Concrete
 {
+    [ValidationAspect(typeof(RentalValidator))]
     public class RentalManager : IEntityRespositoryService<Rental>, IRentalService
     {
         IRentalDal _rentalDal;

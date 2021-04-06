@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Business.Abstract;
 using Business.Constant;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Business;
 using Core.Utilities;
 using DataAccess.Abstract;
@@ -11,6 +13,7 @@ using Entities.Dtos;
 
 namespace Business.Concrete
 {
+    [ValidationAspect(typeof(CarValidator))]
     public class CarManager : ICarService
     {
         ICarDal _carDal;
@@ -25,23 +28,13 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Car>> (_carDal.GetAll(),Message.DataListted);
         }
 
-
+     
         public IResult Add(Car car)
         {
-            if (car.CarName.Length > 2 && car.DailyPrice > 0)
-            {
-               _carDal.Add(car);
-               return new SuccessResult(Message.Added);
-            }
-            else
-            {
-                return new ErrorResult(Message.NotAdded);
 
-            }
-                
-
+            _carDal.Add(car);
+            return new SuccessResult(Message.Added);
         }
-
         public IResult Delete(Car car)
         {
             _carDal.Delete(car);

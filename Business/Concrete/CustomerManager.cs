@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using Business.Abstract;
 using Business.Constant;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities;
 using DataAccess.Abstract;
 using Entities.Concrete;
 
 namespace Business.Concrete
 {
+    [ValidationAspect(typeof(CustomerValidator))]
     public class CustomerManager : ICustomerService
     {
         ICustomerDal _customerDal;
