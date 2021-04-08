@@ -11,7 +11,7 @@ using Entities.Concrete;
 
 namespace Business.Concrete
 {
-    [ValidationAspect(typeof(CustomerValidator))]
+    
     public class CustomerManager : ICustomerService
     {
         ICustomerDal _customerDal;
@@ -20,7 +20,7 @@ namespace Business.Concrete
         {
             _customerDal = customerDal;
         }
-
+        [ValidationAspect(typeof(CustomerValidator))]
         public IResult Add(Customer items)
         {
             _customerDal.Add(items);
@@ -36,7 +36,7 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<List<Customer>>(_customerDal.GetAll());
         }
-
+        [ValidationAspect(typeof(CustomerValidator))]
         public IResult Update(Customer items)
         {
             throw new NotImplementedException();

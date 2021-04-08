@@ -11,7 +11,7 @@ using Entities.Concrete;
 
 namespace Business.Concrete
 {
-    [ValidationAspect(typeof(ColorValidator))]
+   
     public class ColorManager : IColorService
     {
         IColorDal _colorDal;
@@ -21,7 +21,7 @@ namespace Business.Concrete
         {
             _colorDal = colorDal;
         }
-
+        [ValidationAspect(typeof(ColorValidator))]
         public IResult Add(Color color)
         {
             _colorDal.Add(color);
@@ -38,7 +38,7 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<List<Color>>( _colorDal.GetAll(),Message.DataListted);
         }
-
+        [ValidationAspect(typeof(ColorValidator))]
         public IResult Update(Color color)
         {
             _colorDal.Update(color);

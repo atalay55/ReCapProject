@@ -13,7 +13,7 @@ using Entities.Concrete;
 
 namespace Business.Concrete
 {
-    [ValidationAspect(typeof(RentalValidator))]
+   
     public class RentalManager : IEntityRespositoryService<Rental>, IRentalService
     {
         IRentalDal _rentalDal;
@@ -28,7 +28,7 @@ namespace Business.Concrete
         {
             _entity = entity;
         }
-
+        [ValidationAspect(typeof(RentalValidator))]
         public IResult Add(Rental rental)
         {
             if (rental.RentDate == null || rental.ReturnDate!=null)
@@ -53,7 +53,7 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<List<Rental>>(_rentalDal.GetAll());
         }
-
+        [ValidationAspect(typeof(RentalValidator))]
         public IResult Update(Rental rental)
         {
             _rentalDal.Update(rental);

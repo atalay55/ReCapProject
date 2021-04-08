@@ -13,7 +13,6 @@ using Entities.Dtos;
 
 namespace Business.Concrete
 {
-    [ValidationAspect(typeof(CarValidator))]
     public class CarManager : ICarService
     {
         ICarDal _carDal;
@@ -28,7 +27,7 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Car>> (_carDal.GetAll(),Message.DataListted);
         }
 
-     
+        [ValidationAspect(typeof(CarValidator))]
         public IResult Add(Car car)
         {
 
@@ -41,11 +40,11 @@ namespace Business.Concrete
             return new SuccessResult(Message.Deleted);
 
         }
-
+        [ValidationAspect(typeof(CarValidator))]
         public IResult Update(Car car)
         {
             _carDal.Update(car);
-            return new SuccessResult(Message.Deleted);
+            return new SuccessResult(Message.Updated);
         }
 
         public IDataResult<List<Car>> GetbyUnitePrice(decimal min, decimal max)

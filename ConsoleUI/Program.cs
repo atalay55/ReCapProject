@@ -20,8 +20,7 @@ namespace ConsoleUI
             //userManager.Add(new Entities.Concrete.User { FirstName="Sergen",LastName="Kral",Password="234567"});
 
 
-
-            Console.WriteLine(result.Message);
+          
 
 
 

@@ -16,7 +16,6 @@ namespace Business.Constant
         public static string NotDataListted = "Urunler Listelenemedi";
         public static string listted = "urunun ozellikleri guruntelendi";
         public static string Notlistted = "urunun ozellikleri guruntelenemedi";
-
-
+        internal static string ErrorByImageCount="5 ten fazla fotoğraf eklenemez";
     }
 }
