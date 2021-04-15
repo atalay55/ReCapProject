@@ -7,9 +7,11 @@ using Business.Abstract;
 using Business.Concrete;
 using Castle.DynamicProxy;
 using Core.Utilities.Interceptors;
+using Core.Utilities.Security.Jwt;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFrameWork;
 using static Core.Utilities.Interceptors.MethodInterception;
+using static Core.Utilities.Security.Jwt.JwtHelper;
 
 namespace Business.DependencyRules.Autofac
 {
@@ -37,6 +39,9 @@ namespace Business.DependencyRules.Autofac
 
             builder.RegisterType<CarImageManager>().As<ICarImageService>();
             builder.RegisterType<EfCarImageDal>().As<ICarImageDal>();
+           
+            builder.RegisterType<AuthManager>().As<IAuthService>();
+            builder.RegisterType<JwtHelper>().As<ITokenHelper>();
 
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
 

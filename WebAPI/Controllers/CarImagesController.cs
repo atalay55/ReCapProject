@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Business.Abstract;
-using Business.Constant;
+﻿using Business.Abstract;
 using Entities.Concrete;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
 
 namespace WebAPI.Controllers
 {
@@ -64,9 +66,22 @@ namespace WebAPI.Controllers
             var result = _carImagesService.GetAll();
             if (result.Success)
             {
-                return Ok(result);
+                foreach (var carImage in result.Data)
+                {
+                    return Ok(result.Data);
+                }
             }
             return BadRequest(result);
+        }
+        [HttpGet("get")]
+        public IActionResult Get(int id)
+        {
+            var result = _carImagesService.Get(id);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
         }
     }
 

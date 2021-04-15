@@ -14,6 +14,7 @@ using DataAccess.Abstract;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 
+
 namespace Business.Concrete
 {
     
@@ -42,18 +43,13 @@ namespace Business.Concrete
                 return new SuccessResult(Message.Added);
             }
 
-            public IResult Delete(CarImage carImages)
+            public IResult Delete(CarImage carImage)
             {
-                var oldpath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\wwwroot")) + _carImageDal.Get(p => p.Id == carImages.Id).ImagePath;
-                IResult result = BusinessRule.Run(FileHelper.Delete(oldpath));
-
-                if (result != null)
-                {
-                    return result;
-                }
-
-                _carImageDal.Delete(carImages);
-                return new SuccessResult(Message.Deleted);
+           
+                FileHelper.Delete(carImage.ImagePath);
+                _carImageDal.Delete(carImage);
+                return new SuccessResult();
+          
 
 
             }

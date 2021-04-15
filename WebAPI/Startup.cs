@@ -14,6 +14,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
+using Core.Utilities.Security.Jwt;
+using Core.Utilities.IoC;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Core.Utilities.Security.Encryption;
 
 namespace WebAPI
 {
@@ -30,7 +36,26 @@ namespace WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
- 
+
+            var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidIssuer = tokenOptions.Issuer,
+                        ValidAudience = tokenOptions.Audience,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey),
+
+                    };
+                });
+            ServiceTool.Create(services);
+
 
         }
 
@@ -41,10 +66,15 @@ namespace WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+           
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            
+            app.UseStaticFiles();
+           
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Core.Entities.Concrete;
 using Entities.Concrete;
 using FluentValidation;
 
@@ -12,9 +13,8 @@ namespace Business.ValidationRules.FluentValidation
         {
             RuleFor(p => p.FirstName).NotEmpty();
             RuleFor(p => p.LastName).NotEmpty();
-            RuleFor(p => p.Password).NotEmpty();
             RuleFor(p => p.Email).EmailAddress();
-            RuleFor(p => p.Password).Length(6);
+            
         }
     }
 }
