@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Business.Abstract;
+using Business.BusinessAspect.Autofac;
 using Business.Constant;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
@@ -12,7 +13,7 @@ using Entities.Concrete;
 
 namespace Business.Concrete
 {
-   
+    [SecuredOperation("admin")]
     public class UserManager : IUserService
     {
         IUserDal _userDal;
@@ -27,18 +28,18 @@ namespace Business.Concrete
             _userDal.Add(user);
             return new SuccessResult(Message.Added);
         }
-
+        [SecuredOperation("user")]
         public IResult Delete(User user)
         {
             _userDal.Delete(user);
             return new SuccessResult(Message.Deleted);
         }
-
+        [SecuredOperation("user")]
         public IDataResult<List<User>> GetAll()
         {
             return new SuccessDataResult<List<User>>(_userDal.GetAll());
         }
-
+        [SecuredOperation("user")]
         public User GetByMail(string email)
         {
             return _userDal.Get(u => u.Email == email);
@@ -48,7 +49,7 @@ namespace Business.Concrete
         {
             return _userDal.GetClaims(user);
         }
-
+        [SecuredOperation("user")]
         [ValidationAspect(typeof(UserValidator))]
         public IResult Update(User user)
         {
@@ -56,6 +57,6 @@ namespace Business.Concrete
             return new SuccessResult(Message.Updated);
         }
 
-        
+
     }
 }

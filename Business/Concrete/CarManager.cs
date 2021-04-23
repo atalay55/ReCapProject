@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using Business.Abstract;
+using Business.BusinessAspect.Autofac;
 using Business.Constant;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Performance;
 using Core.Aspects.Autofac.Validation;
 using Core.Business;
 using Core.Utilities;
@@ -13,6 +16,7 @@ using Entities.Dtos;
 
 namespace Business.Concrete
 {
+    [SecuredOperation("admin")]
     public class CarManager : ICarService
     {
         ICarDal _carDal;
@@ -21,12 +25,15 @@ namespace Business.Concrete
         {
             _carDal = carDal;
         }
-
+        [SecuredOperation("user")]
+        [ValidationAspect(typeof(CarValidator))]
+        [CacheAspect]
+        [PerformanceAspect(60)]
         public IDataResult<List<Car>>  GetAll()
         {
             return new SuccessDataResult<List<Car>> (_carDal.GetAll(),Message.DataListted);
         }
-
+        [CacheRemoveAspect("ICarService.Get")]
         [ValidationAspect(typeof(CarValidator))]
         public IResult Add(Car car)
         {
@@ -34,12 +41,18 @@ namespace Business.Concrete
             _carDal.Add(car);
             return new SuccessResult(Message.Added);
         }
+
+
+
+        [CacheRemoveAspect("ICarService.Get")]
         public IResult Delete(Car car)
         {
             _carDal.Delete(car);
             return new SuccessResult(Message.Deleted);
 
         }
+
+        [CacheRemoveAspect("ICarService.Get")]
         [ValidationAspect(typeof(CarValidator))]
         public IResult Update(Car car)
         {
@@ -47,21 +60,30 @@ namespace Business.Concrete
             return new SuccessResult(Message.Updated);
         }
 
+        [CacheAspect]
+        [SecuredOperation("user")]
         public IDataResult<List<Car>> GetbyUnitePrice(decimal min, decimal max)
         {
             return new SuccessDataResult<List<Car>>(  _carDal.GetAll(p => p.DailyPrice <= max && p.DailyPrice >= min),Message.listted);
         }
 
+        [CacheAspect]
+        [SecuredOperation("user")]
         public IDataResult<List<Car>> GetbyBrandId(int brandId)
         {
             return new SuccessDataResult<List<Car>> (_carDal.GetAll(p => p.BrandId == brandId),Message.listted);
         }
 
+        [CacheAspect]
+        [SecuredOperation("user")]
         public IDataResult<List<Car>> GetCarsByColorId(int colorId)
         {
             return new SuccessDataResult<List<Car>> (_carDal.GetAll(p => p.ColorId == colorId),Message.listted);
         }
 
+
+        [CacheAspect]
+        [SecuredOperation("user")]
         public IDataResult<List<CarDetailDto>> GetDetails()
         {
             return new SuccessDataResult<List<CarDetailDto>> (_carDal.GetDetails(),Message.listted);

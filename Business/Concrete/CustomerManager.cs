@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Business.Abstract;
+using Business.BusinessAspect.Autofac;
 using Business.Constant;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
@@ -11,7 +12,7 @@ using Entities.Concrete;
 
 namespace Business.Concrete
 {
-    
+    [SecuredOperation("admin")]
     public class CustomerManager : ICustomerService
     {
         ICustomerDal _customerDal;
@@ -20,6 +21,9 @@ namespace Business.Concrete
         {
             _customerDal = customerDal;
         }
+
+
+
         [ValidationAspect(typeof(CustomerValidator))]
         public IResult Add(Customer items)
         {
@@ -29,17 +33,26 @@ namespace Business.Concrete
 
         public IResult Delete(Customer items)
         {
-            throw new NotImplementedException();
+            _customerDal.Delete(items);
+            return new SuccessResult(Message.Deleted);
         }
 
+        
+        [SecuredOperation("user")]
         public IDataResult<List<Customer>> GetAll()
         {
             return new SuccessDataResult<List<Customer>>(_customerDal.GetAll());
         }
+
+
+
+
+
         [ValidationAspect(typeof(CustomerValidator))]
         public IResult Update(Customer items)
         {
-            throw new NotImplementedException();
+            _customerDal.Update(items);
+            return new SuccessResult(Message.Updated);
         }
     }
 }

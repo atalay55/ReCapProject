@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Business.Abstract;
+using Business.BusinessAspect.Autofac;
 using Business.Constant;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.Business;
 using Core.Utilities;
@@ -17,85 +19,95 @@ using Microsoft.AspNetCore.Http;
 
 namespace Business.Concrete
 {
-    
+    [SecuredOperation("admin")]
+    public class CarImageManager : ICarImageService
+    {
 
-        public class CarImageManager : ICarImageService
-        {
-
-            ICarImageDal _carImageDal;
+        ICarImageDal _carImageDal;
 
         public CarImageManager(ICarImageDal carImageDal)
         {
             _carImageDal = carImageDal;
         }
-
-            public IResult Add(CarImage carImage, IFormFile file)
+        [CacheRemoveAspect("ICarImageService.Get")]
+        public IResult Add(CarImage carImage, IFormFile file)
+        {
+            IResult result = BusinessRule.Run(CheckImageLimited(carImage.CarId));
+            if (result != null)
             {
-                IResult result = BusinessRule.Run(CheckImageLimited(carImage.CarId));
-                if (result != null)
-                {
-                    return result;
-                }
-
-                carImage.ImagePath = FileHelper.Add(file);
-                carImage.Date = DateTime.Now;
-                _carImageDal.Add(carImage);
-                return new SuccessResult(Message.Added);
-            }
-
-            public IResult Delete(CarImage carImage)
-            {
-           
-                FileHelper.Delete(carImage.ImagePath);
-                _carImageDal.Delete(carImage);
-                return new SuccessResult();
-          
-
+                return result;
 
             }
 
-            public IDataResult<CarImage> Get(int id)
+            carImage.ImagePath = FileHelper.Add(file);
+            carImage.Date = DateTime.Now;
+            _carImageDal.Add(carImage);
+            return new SuccessResult(Message.Added);
+        }
+
+
+        [CacheRemoveAspect("ICarImageService.Get")]
+        public IResult Delete(CarImage carImage)
+        {
+
+            FileHelper.Delete(carImage.ImagePath);
+            _carImageDal.Delete(carImage);
+            return new SuccessResult();
+
+        }
+
+
+
+        [CacheAspect]
+        [SecuredOperation("user")]
+        public IDataResult<CarImage> Get(int id)
+        {
+            return new SuccessDataResult<CarImage>(_carImageDal.Get(p => p.Id == id));
+        }
+
+
+        [CacheAspect]
+        [SecuredOperation("user")]
+        public IDataResult<List<CarImage>> GetAll()
+        {
+            return new SuccessDataResult<List<CarImage>>(_carImageDal.GetAll(), Message.listted);
+
+        }
+
+        [CacheAspect]
+        [SecuredOperation("user")]
+        public IDataResult<List<CarImage>> GetImagesByCarId(int CarId)
+        {
+            var result = _carImageDal.GetAll(c => c.CarId == CarId).Any();
+            if (!result)
             {
-                return new SuccessDataResult<CarImage>(_carImageDal.Get(p => p.Id == id));
+                List<CarImage> carimage = new List<CarImage>();
+                carimage.Add(new CarImage { CarId = CarId, ImagePath = @"\Images\default.png" });
+                return new SuccessDataResult<List<CarImage>>(carimage);
             }
+            return new SuccessDataResult<List<CarImage>>(_carImageDal.GetAll(p => p.CarId == CarId));
+        }
 
-            public IDataResult<List<CarImage>> GetAll()
+        [CacheRemoveAspect("ICarImageService.Get")]
+        [ValidationAspect(typeof(CarImageValidator))]
+        public IResult Update(CarImage carImage, IFormFile file)
+        {
+            var oldPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\wwwroot")) + _carImageDal.Get(p => p.Id == carImage.CarId).ImagePath;
+
+            carImage.ImagePath = FileHelper.Update(oldPath, file);
+            carImage.Date = DateTime.Now;
+            _carImageDal.Update(carImage);
+            return new SuccessResult();
+
+        }
+        private IResult CheckImageLimited(int carId)
+        {
+            var carImageCount = _carImageDal.GetAll(p => p.CarId == carId).Count;
+            if (carImageCount >= 5)
             {
-                return new SuccessDataResult<List<CarImage>>(_carImageDal.GetAll(), Message.listted);
-
+                return new ErrorResult(Message.ErrorByImageCount);
             }
-
-            public IDataResult<List<CarImage>> GetImagesByCarId(int CarId)
-            {
-                var result = _carImageDal.GetAll(c => c.CarId == CarId).Any();
-                if (!result)
-                {
-                    List<CarImage> carimage = new List<CarImage>();
-                    carimage.Add(new CarImage { CarId = CarId, ImagePath = @"\Images\default.png" });
-                    return new SuccessDataResult<List<CarImage>>(carimage);
-                }
-                return new SuccessDataResult<List<CarImage>>(_carImageDal.GetAll(p => p.CarId == CarId));
-            }
-
-            [ValidationAspect(typeof(CarImageValidator))]
-            public IResult Update(CarImage carImage, IFormFile file)
-            {
-                var oldPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\wwwroot")) + _carImageDal.Get(p => p.Id == carImage.CarId).ImagePath;
-
-                carImage.ImagePath = FileHelper.Update(oldPath, file);
-                carImage.Date = DateTime.Now;
-                _carImageDal.Update(carImage);
-                return new SuccessResult();
-
-            }
-            private IResult CheckImageLimited(int carId)
-            {
-                var carImageCount = _carImageDal.GetAll(p => p.CarId == carId).Count;
-                if (carImageCount >= 5)
-                {
-                    return new ErrorResult(Message.ErrorByImageCount);
-                }
-                return new SuccessResult();
-            }
+            return new SuccessResult();
         }
     }
+}

@@ -20,6 +20,8 @@ using Core.Utilities.IoC;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Core.Utilities.Security.Encryption;
+using Core.DependencyResolvers;
+using Core.Extensions;
 
 namespace WebAPI
 {
@@ -54,8 +56,9 @@ namespace WebAPI
 
                     };
                 });
-            ServiceTool.Create(services);
-
+            services.AddDependencyResolvers(new CoreModule[] {
+               new CoreModule()
+                });
 
         }
 

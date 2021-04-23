@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Business.Abstract;
+using Business.BusinessAspect.Autofac;
 using Business.Constant;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
@@ -13,7 +14,7 @@ using Entities.Concrete;
 
 namespace Business.Concrete
 {
-   
+    [SecuredOperation("admin")]
     public class RentalManager : IEntityRespositoryService<Rental>, IRentalService
     {
         IRentalDal _rentalDal;
@@ -28,19 +29,20 @@ namespace Business.Concrete
         {
             _entity = entity;
         }
+
         [ValidationAspect(typeof(RentalValidator))]
         public IResult Add(Rental rental)
         {
-            if (rental.RentDate == null || rental.ReturnDate!=null)
+            if (rental.RentDate == null || rental.ReturnDate != null)
             {
-                    _rentalDal.Add(rental);
-                 return new SuccessResult(Message.Added);
+                _rentalDal.Add(rental);
+                return new SuccessResult(Message.Added);
             }
             else
             {
                 return new ErrorResult(Message.NotAdded);
             }
-            
+
         }
 
         public IResult Delete(Rental rental)
