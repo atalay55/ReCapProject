@@ -12,7 +12,7 @@ using Entities.Concrete;
 
 namespace Business.Concrete
 {
-    [SecuredOperation("admin")]
+    
     public class CustomerManager : ICustomerService
     {
         ICustomerDal _customerDal;
@@ -23,7 +23,7 @@ namespace Business.Concrete
         }
 
 
-
+        [SecuredOperation("admin")]
         [ValidationAspect(typeof(CustomerValidator))]
         public IResult Add(Customer items)
         {
@@ -31,14 +31,15 @@ namespace Business.Concrete
             return new SuccessResult(Message.Added);
         }
 
+        [SecuredOperation("admin")]
         public IResult Delete(Customer items)
         {
             _customerDal.Delete(items);
             return new SuccessResult(Message.Deleted);
         }
 
-        
-        [SecuredOperation("user")]
+
+        [SecuredOperation("admin")]
         public IDataResult<List<Customer>> GetAll()
         {
             return new SuccessDataResult<List<Customer>>(_customerDal.GetAll());
@@ -47,7 +48,7 @@ namespace Business.Concrete
 
 
 
-
+        [SecuredOperation("admin")]
         [ValidationAspect(typeof(CustomerValidator))]
         public IResult Update(Customer items)
         {

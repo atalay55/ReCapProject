@@ -13,7 +13,7 @@ using Entities.Concrete;
 
 namespace Business.Concrete
 {
-    [SecuredOperation("admin")]
+    
     public class BrandManager : IBrandService
     {
         IBrandDal _brandDal;
@@ -23,7 +23,7 @@ namespace Business.Concrete
             _brandDal = brandDal;
         }
 
-
+        [SecuredOperation("admin")]
         [CacheRemoveAspect("IBrandService.Get")]
         [ValidationAspect(typeof(BrandValidator))]
         public IResult Add(Brand items)
@@ -33,6 +33,7 @@ namespace Business.Concrete
             return new SuccessResult(Message.Added);
         }
 
+        [SecuredOperation("admin")]
         [CacheRemoveAspect("IBrandService.Get")]
         public IResult Delete(Brand items)
         {
@@ -42,14 +43,15 @@ namespace Business.Concrete
 
 
         [CacheAspect]
-        
-        [SecuredOperation("user")]
+
+        [SecuredOperation("user,admin")]
         public IDataResult<List<Brand>> GetAll()
         {
             return new SuccessDataResult<List<Brand>>( _brandDal.GetAll(),Message.DataListted);
         }
 
 
+        [SecuredOperation("admin")]
         [CacheRemoveAspect("IBrandService.Get")]
         [ValidationAspect(typeof(BrandValidator))]
         public IResult Update(Brand items)

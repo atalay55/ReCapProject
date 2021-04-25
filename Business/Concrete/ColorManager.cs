@@ -13,7 +13,7 @@ using Entities.Concrete;
 
 namespace Business.Concrete
 {
-    [SecuredOperation("admin")]
+    
     public class ColorManager : IColorService
     {
         IColorDal _colorDal;
@@ -23,7 +23,8 @@ namespace Business.Concrete
         {
             _colorDal = colorDal;
         }
-       
+
+        [SecuredOperation("admin")]
         [CacheRemoveAspect("IColorService.Get")]
         [ValidationAspect(typeof(ColorValidator))]
         public IResult Add(Color color)
@@ -32,6 +33,7 @@ namespace Business.Concrete
             return new SuccessResult(Message.Added);
         }
 
+        [SecuredOperation("admin")]
         [CacheRemoveAspect("IColorService.Get")]
         public IResult Delete(Color color)
         {
@@ -39,14 +41,15 @@ namespace Business.Concrete
             return new SuccessResult(Message.Deleted);
         }
 
+
         [CacheAspect]
-        [SecuredOperation("user")]
+        [SecuredOperation("user,admin")]
         public IDataResult<List<Color>> GetAll()
         {
             return new SuccessDataResult<List<Color>>( _colorDal.GetAll(),Message.DataListted);
         }
 
-
+        [SecuredOperation("admin")]
         [CacheRemoveAspect("IColorService.Get")]
         [ValidationAspect(typeof(ColorValidator))]
         public IResult Update(Color color)

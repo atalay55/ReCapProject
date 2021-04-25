@@ -39,6 +39,8 @@ namespace WebAPI
         {
             services.AddControllers();
 
+            services.AddCors();
+
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -59,6 +61,7 @@ namespace WebAPI
             services.AddDependencyResolvers(new CoreModule[] {
                new CoreModule()
                 });
+            
 
         }
 
@@ -69,7 +72,8 @@ namespace WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-           
+
+            app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader());
 
             app.UseHttpsRedirection();
 

@@ -5,6 +5,7 @@ using Business.Abstract;
 using Business.BusinessAspect.Autofac;
 using Business.Constant;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.Business;
 using Core.Entities;
@@ -14,7 +15,8 @@ using Entities.Concrete;
 
 namespace Business.Concrete
 {
-    [SecuredOperation("admin")]
+    
+    
     public class RentalManager : IEntityRespositoryService<Rental>, IRentalService
     {
         IRentalDal _rentalDal;
@@ -30,6 +32,9 @@ namespace Business.Concrete
             _entity = entity;
         }
 
+
+        [SecuredOperation("admin")]
+        [CacheRemoveAspect("Get")]
         [ValidationAspect(typeof(RentalValidator))]
         public IResult Add(Rental rental)
         {
@@ -45,16 +50,24 @@ namespace Business.Concrete
 
         }
 
+        [SecuredOperation("admin")]
+        [CacheRemoveAspect("Get")]
         public IResult Delete(Rental rental)
         {
             _rentalDal.Delete(rental);
             return new SuccessResult(Message.Deleted);
         }
 
+        [SecuredOperation("admin")]
+        [CacheAspect]
         public IDataResult<List<Rental>> GetAll()
         {
             return new SuccessDataResult<List<Rental>>(_rentalDal.GetAll());
         }
+
+
+        [SecuredOperation("admin")]
+        [CacheRemoveAspect("Get")]
         [ValidationAspect(typeof(RentalValidator))]
         public IResult Update(Rental rental)
         {

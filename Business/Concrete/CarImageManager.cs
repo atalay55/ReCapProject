@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Business.Concrete
 {
-    [SecuredOperation("admin")]
+    
     public class CarImageManager : ICarImageService
     {
 
@@ -30,6 +30,7 @@ namespace Business.Concrete
             _carImageDal = carImageDal;
         }
         [CacheRemoveAspect("ICarImageService.Get")]
+        [ValidationAspect(typeof(CarImageValidator))]
         public IResult Add(CarImage carImage, IFormFile file)
         {
             IResult result = BusinessRule.Run(CheckImageLimited(carImage.CarId));
@@ -67,7 +68,7 @@ namespace Business.Concrete
 
 
         [CacheAspect]
-        [SecuredOperation("user")]
+        //[SecuredOperation("user")]
         public IDataResult<List<CarImage>> GetAll()
         {
             return new SuccessDataResult<List<CarImage>>(_carImageDal.GetAll(), Message.listted);
